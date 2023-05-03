@@ -1,0 +1,140 @@
+
+<div class="card flex justify-content-center" style="text-align: center; margin-bottom: 6%;">
+  <p-toggleButton [(ngModel)]="checked" onLabel="Show Admin View" offLabel="Show Client View"></p-toggleButton>
+</div>
+
+<!-- show for client view -->
+<div [hidden]="!checked" style="text-align: center; margin-bottom: 6%;">
+  <div class="clientView" style="display: inline-flex; width: max-content;">
+    <div *ngFor="let col of clientColumns">
+      <p-card [style]="{
+        backgroundColor: 'grey', 
+        color: 'white',
+        flex: '1'
+      }">
+        <div>
+          {{ col.colName }}
+        </div>
+      </p-card>
+
+      <p-card *ngFor="let apt of col.appointments">
+        <div>
+          {{ apt.header }}
+        </div>
+        <div>
+          {{ apt.timeDisplay }}
+        </div>
+      </p-card>
+    </div>
+  </div>
+</div>
+
+
+<!-- show for Admin schedling -->
+<!-- TODO: Add functionality to add appointment -->
+<div [hidden]="checked">
+  
+  <div class="dateSelectionContainer">
+    <p-calendar
+      [(ngModel)]="dates"
+      selectionMode="multiple"
+      [readonlyInput]="true"
+      [showIcon]="true"
+      [style]="{'flex':'2'}" [inputStyle]="{'width':'95%'}"
+    ></p-calendar>
+  
+    <p-button label="Generate Grid" (click)="onGenerateGrid()"></p-button>
+  </div>
+
+  <div class="gridContainer">
+    <p-table
+      [columns]="cols"
+      [value]="gridData"
+      styleClass="p-datatable-gridlines"
+      [tableStyle]="{ 'min-width': '50rem' }"
+    >
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th *ngFor="let col of columns">
+            {{ col.header }}
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-columns="columns">
+        <tr>
+          <td *ngFor="let col of cols">
+            <div *ngIf="col.field === 'time'; else elseBlock">
+              {{ rowData[col.field] }}
+            </div>
+            <ng-template #elseBlock>
+              <div *ngIf="rowData[col.field].appointments.length" (click)="clickEvent(rowData[col.field])" class="gridAptContainer">
+                <p-card *ngFor="let apt of rowData[col.field].appointments">
+                  <div>
+                    {{ apt.header }}
+                  </div>
+                  <div>
+                    {{ apt.timeDisplay }}
+                  </div>
+                </p-card>
+              </div>
+              <button pButton pRipple type="button" icon="pi pi-plus" (click)="onAddAppointment(col, rowData.time)" class="p-button-rounded p-button-text"></button>
+              <!-- <button pButton pRipple type="button" icon="pi pi-plus" (click)="op.toggle($event)" class="p-button-rounded p-button-text"></button> -->
+            </ng-template>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<!-- <p-overlayPanel #op>
+    <ng-template pTemplate="content">
+      <h4>Custom Content</h4>
+      <input type="text" pInputText [(ngModel)]="newAppointment.header" />
+    </ng-template>
+</p-overlayPanel> -->
+<p-dialog header="Create Appointment" [(visible)]="isDialogVisible" [style]="{width: '50vw'}">
+  <ng-template pTemplate="content">
+    <div>
+      <h4 style="margin: 1%;">Address:</h4>
+      <input type="text" pInputText [(ngModel)]="newAppointment.header" />
+    </div>
+
+    <div style="width: 50%; margin-bottom: 32px;">
+      <span style="display: flex;">
+        <h3 style="flex: 1; text-align: left;"> 10:00 </h3>
+        <h3 style="flex: 1; text-align: center;"> 10:15 </h3>
+        <h3 style="flex: 1; text-align: right;"> 10:30 </h3>
+      </span>
+      <p-slider id="timeRange" [(ngModel)]="rangeValues" [range]="true" [step]="15" [min]="0" [max]="30"></p-slider>
+    </div>
+
+    <div style="text-align: center;">
+      <p-button label="Create Appointment" (click)="onSubmitAppointment()"></p-button>
+    </div>
+
+  </ng-template>
+</p-dialog>
+
+
+<!-- 
+<div class="calendarContainer">
+  <full-calendar [options]="calendarOptions"></full-calendar>
+</div> -->
+
+<!-- Card that came with template
+<div class="card-container">
+  <button class="card card-small" tabindex="0">
+    <button class="card card-small" (click)="" tabindex="0">
+    <svg
+      class="material-icons"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+    >
+      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+    </svg>
+    <span>New Component</span>
+  </button>
+</div> -->
