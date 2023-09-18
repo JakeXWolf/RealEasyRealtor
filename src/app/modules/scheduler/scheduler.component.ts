@@ -1,59 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 
+import { Appointment } from '../../core/models/appointment';
+import { ClientColumn } from '../../core/models/client-column';
+import { Column } from '../../core/models/column';
+import { GridCell } from '../../core/models/grid-cell';
+import { AppointmentModal } from '../../core/models/appointment-modal';
+import { Row } from '../../core/models/row';
+
 // @fullcalendar plugins
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { CalendarOptions } from '@fullcalendar/core'; // useful for typechecking
 
-class GridCell {
-  display: string;
-  appointments: Appointment[];
-  [key: string]: any;
-
-  constructor() {
-    this.display = '';
-    this.appointments = [];
-  }
-
-  setDisplay(num: number):void {
-    if (num < 12) {
-      this.display = num + ':00 AM'
-    }
-    else if (num == 12) {
-      this.display = num + ':00 PM';
-    }
-    else {
-      this.display = (num - 12) + ':00 PM';
-    }
-  }
-}
-
-class Appointment {
-  header: string = '';
-  timeDisplay: string = '';
-  col: string = '';
-  timeStart: Date = new Date();
-  timeEnd: Date = new Date();
-
-  isSelected: boolean = false;
-
-  public constructor(init?: Partial<Appointment>) {
-    Object.assign(this, init);
-  }
-
-  public setDisplay() {
-    this.timeDisplay = this.timeStart.getHours().toString() + ':' + this.getMinuteString(this.timeStart);
-    this.timeDisplay += ' - ' + this.timeEnd.getHours().toString() + ':' + this.getMinuteString(this.timeEnd);
-
-    this.col = (this.timeStart.getMonth() + 1).toString() + this.timeStart.getDate().toString();
-  }
-
-  private getMinuteString(time: Date): string {
-    let minutes: number = time.getMinutes();
-    return minutes == 0 ? '00' : minutes.toString();
-  }
-}
 
 // class RowObj {
 //   rowCells: GridCell[];
@@ -64,59 +23,6 @@ class Appointment {
 // }
 
 // list of rows -> rows are list of cells -> cells ar list of appts
-
-class Column {
-  field: string = '';
-  header: string = '';
-  date: Date = new Date();
-
-  public constructor(init?: Partial<Column>) {
-    Object.assign(this, init);
-  }
-
-  public setHeader(day: Date) {
-    this.date = day;
-    this.header = day.toDateString().substring(0, 4) +
-      day.toLocaleDateString().substring(0, day.toLocaleDateString().lastIndexOf('/'));
-  }
-}
-
-
-// obj for Rows on the grid when creating appointments
-class Row {
-  time: string = '';
-  timeValue: number; 
-  [key: string]: any;
-
-  constructor(time: number) {
-    this.timeValue = time;
-    this.setDisplay(time);
-  }
-
-  setDisplay(num: number): void {
-    let hour: number = Number.isInteger(num) ? num : num - .5;
-    let minute: string = Number.isInteger(num) ? ':00' : ':30';
-    
-    if (num < 12) {
-      this.time = hour + minute + ' AM';
-    } else if (num == 12 || num == 12.5) {
-      this.time = '12' + minute + ' PM';
-    } else {
-      this.time = hour - 12 + minute + ' PM';
-    }
-  }
-}
-
-// obj for client view
-class ClientColumn {
-  colName: string = '';
-  colValue: string = '';
-  appointments: Appointment[] = [];
-
-  public constructor(init?: Partial<ClientColumn>) {
-    Object.assign(this, init);
-  }
-}
 
 @Component({
   selector: 'app-scheduler',
@@ -133,33 +39,18 @@ export class SchedulerComponent implements OnInit {
   cols: Column[] = [];
   dates: Date[] = [];
 
-  checked: boolean = false;
+  checked: boolean = true;
 
   isDialogVisible: boolean = false;
   newAppointment: Appointment = new Appointment();
+  newAptModal: AppointmentModal = new AppointmentModal();
 
   ngOnInit() {
-    // days are test not used rn
-    // this.days = [
-    //   { display: 'Mon 4/17' },
-    //   { display: 'Tue 4/18' },
-    //   { display: 'Wed 4/19' },
-    //   { display: 'Thu 4/20' },
-    // ];
-
-    // this.cols = [
-    //   new Column({ field: 'time', header: '' }),
-    //   new Column({ field: '417', header: 'Mon 4/17' }),
-    //   new Column({ field: '418', header: 'Tue 4/18' }),
-    //   new Column({ field: '419', header: 'Wed 4/19' }),
-    //   new Column({ field: '420', header: 'Thu 4/20' }),
-    // ];
-
     this.dates = [
       new Date(2023, 3, 17),
       new Date(2023, 3, 18),
       new Date(2023, 3, 19),
-      new Date(2023, 3, 20)
+      new Date(2023, 3, 20),
     ];
 
     this.testcreateFakeApts();
@@ -174,21 +65,77 @@ export class SchedulerComponent implements OnInit {
     console.log(event);
   }
 
-  rangeValues: number[] = [0, 30];
+  // appointment dialog
+  rangeValues: number[] = [0, 2];
+  newAptHeader: string = 'Create Appointment for ';
 
-  public onAddAppointment(col: Column, time: string) {
-    // todo use grid values to:
-    // set rangevalues
-    // set new appt date
-    // set new appt hour
+  // initializes new appointment and opens modal
+  public onAddAppointment(col: Column, timeVal: number) {
+    this.newAppointment = new Appointment({
+      timeStart: new Date(col.date),
+      timeEnd: new Date(col.date),
+    });
+    this.newAppointment.header = this.newAptModal.prevAddress;
+    this.newAptHeader += col.header;
+
+    this.newAptModal.dateString = col.field;
+    this.newAptModal.setDisplay(timeVal);
+
     this.isDialogVisible = true;
-    this.newAppointment = new Appointment(); //need to pass obj in to initialize appointment date
-    console.log(col, time);
   }
 
+  // creates the appointment and puts it in the grid
   public onSubmitAppointment() {
+    //set time for appointment
+    let hourStart: number;
+    let hourEnd: number = (hourStart = this.newAptModal.timeVal);
 
-  };
+    if (hourStart % 1) {
+      hourStart -= 0.5;
+      hourEnd = this.rangeValues[1] === 2 ? hourEnd + 0.5 : hourEnd - 0.5;
+    }
+
+    this.newAppointment.timeStart.setHours(hourStart);
+    this.newAppointment.timeStart.setMinutes(
+      this.newAptModal.minuteList[this.rangeValues[0]]
+    );
+    this.newAppointment.timeEnd.setHours(hourEnd);
+    this.newAppointment.timeEnd.setMinutes(
+      this.newAptModal.minuteList[this.rangeValues[1]]
+    );
+
+    //set up the display
+    this.newAppointment.setDisplay();
+
+    //find row first
+    let index = this.gridData.findIndex(
+      (x) => x.timeValue === this.newAptModal.timeVal
+    );
+    //insert new appoinment into the corresponding row and the dated column
+    this.gridData[index][this.newAptModal.dateString].appointments.push(
+      this.newAppointment
+    );
+    //sort
+    this.gridData[index][this.newAptModal.dateString].appointments.sort(
+      function (a: Appointment, b: Appointment) {
+        return a.timeStart.getTime() - b.timeStart.getTime();
+      }
+    );
+
+    this.newAptModal.prevAddress = this.newAppointment.header;
+
+    this.isDialogVisible = false;
+  }
+
+  onEditAppointment(apt: Appointment) {
+    this.isDialogVisible = true;
+
+    this.newAppointment = new Appointment(apt);
+
+    this.isDialogVisible = false;
+  }
+
+  //#region Create Grid (Admin View)
 
   gridData: Row[] = [];
 
@@ -219,24 +166,23 @@ export class SchedulerComponent implements OnInit {
   private setupGrid() {
     for (let i = 8; i < 17.5; i += 0.5) {
       // each row obj created
-      let newRow: Row = new Row(i);
+      let newRow: Row = new Row({timeValue: i});
+      newRow.setDisplay(i);
 
       this.cols.forEach((x: Column) => {
         // each prop in obj created (each prop is a grid cell)
-        let newProp = new GridCell();
-
         if (x.field !== 'time') {
           newRow[x.field] = new GridCell();
         }
       });
 
-      this.insertAppointments(newRow, this.fakeApts, i);
+      this.insertAptsNewRow(newRow, this.fakeApts, i);
 
       this.gridData.push(newRow);
     }
   }
 
-  private insertAppointments(newRow: Row, apts: Appointment[], hour: number) {
+  private insertAptsNewRow(newRow: Row, apts: Appointment[], hour: number) {
     let aptsInRow: Appointment[] = apts.filter((x) => {
       return (
         (hour - x.timeStart.getHours() === 0 &&
@@ -280,7 +226,30 @@ export class SchedulerComponent implements OnInit {
     });
   }
 
+  //#endregion
+
+  //#region Client View
+
   clientColumns: ClientColumn[] = [];
+  selectedApts: Appointment[] = [];
+
+  public onAptClicked(apt: Appointment) {
+    apt.onSelected();
+
+    if (apt.isSelected) {
+      this.selectedApts.push(apt);
+    } else {
+      // TODO: add id to apt
+      let i = this.selectedApts.findIndex((x) => {
+        x.timeStart === apt.timeStart;
+      });
+      this.selectedApts.splice(i, 1);
+    }
+  }
+
+  public onSubmitClientTimes() {
+    console.log(this.selectedApts);
+  }
 
   private createClientView() {
     let apts: Appointment[] = [...this.fakeApts];
@@ -315,6 +284,10 @@ export class SchedulerComponent implements OnInit {
       }
     });
   }
+
+  //#endregion Client View
+
+  //#region original non adaptive column grid
 
   /***************     original non adaptive column grid      *******************/
 
@@ -363,4 +336,6 @@ export class SchedulerComponent implements OnInit {
 
   //   this.gridData = times;
   // }
+
+  //#endregion
 }

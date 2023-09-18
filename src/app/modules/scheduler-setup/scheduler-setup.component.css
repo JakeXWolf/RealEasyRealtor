@@ -1,0 +1,36 @@
+:host ::ng-deep .p-inputtext {
+    text-align: center;
+}
+
+.clientInfoContainer {
+  margin-bottom: 3%;
+  padding: 0 10% 0 10%;
+}
+
+:host ::ng-deep .clientInfoContainer input {
+  width: -webkit-fill-available;
+}
+
+/* calendar dates input and button */
+.dateSelectionContainer {
+  display: block;
+  margin-bottom: 3%;
+  padding: 0 10% 0 10%;
+}
+
+:host ::ng-deep p-calendar {
+  flex: 2;
+}
+
+:host ::ng-deep p-calendar .p-calendar {
+  width: -webkit-fill-available;
+}
+
+:host ::ng-deep .dateSelectionContainer p-button {
+  flex: 1;
+  text-align: center;
+}
+
+h3 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"
+}

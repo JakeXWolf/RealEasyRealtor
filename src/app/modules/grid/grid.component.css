@@ -1,0 +1,20 @@
+.gridContainer {
+  text-align: -webkit-center;
+}
+
+:host ::ng-deep .gridContainer .p-datatable .p-datatable-thead > tr > th {
+  text-align: center;
+}
+
+:host ::ng-deep .gridContainer .p-datatable .p-datatable-tbody > tr > td {
+  text-align: center;
+}
+
+:host ::ng-deep .gridContainer .p-component {
+  width: fit-content;
+  text-align: center;
+}
+
+:host ::ng-deep .gridContainer .p-card .p-card-content {
+  padding: 0% !important;
+}

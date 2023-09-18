@@ -17,7 +17,7 @@
         </div>
       </p-card>
 
-      <p-card *ngFor="let apt of col.appointments">
+      <p-card *ngFor="let apt of col.appointments" [style]="apt.style" (click)="onAptClicked(apt)">
         <div>
           {{ apt.header }}
         </div>
@@ -26,6 +26,9 @@
         </div>
       </p-card>
     </div>
+  </div>
+  <div style="margin-top: 3%;">
+    <p-button label="Submit" (click)="onSubmitClientTimes()"></p-button>
   </div>
 </div>
 
@@ -77,7 +80,7 @@
                   </div>
                 </p-card>
               </div>
-              <button pButton pRipple type="button" icon="pi pi-plus" (click)="onAddAppointment(col, rowData.time)" class="p-button-rounded p-button-text"></button>
+              <button pButton pRipple type="button" icon="pi pi-plus" (click)="onAddAppointment(col, rowData.timeValue)" class="p-button-rounded p-button-text"></button>
               <!-- <button pButton pRipple type="button" icon="pi pi-plus" (click)="op.toggle($event)" class="p-button-rounded p-button-text"></button> -->
             </ng-template>
           </td>
@@ -102,15 +105,16 @@
 
     <div style="width: 50%; margin-bottom: 32px;">
       <span style="display: flex;">
-        <h3 style="flex: 1; text-align: left;"> 10:00 </h3>
-        <h3 style="flex: 1; text-align: center;"> 10:15 </h3>
-        <h3 style="flex: 1; text-align: right;"> 10:30 </h3>
+        <h3 style="flex: 1; text-align: left;"> {{ newAptModal.timeOpts[0] }} </h3>
+        <h3 style="flex: 1; text-align: center;"> {{ newAptModal.timeOpts[1] }} </h3>
+        <h3 style="flex: 1; text-align: right;"> {{ newAptModal.timeOpts[2] }} </h3>
       </span>
-      <p-slider id="timeRange" [(ngModel)]="rangeValues" [range]="true" [step]="15" [min]="0" [max]="30"></p-slider>
+      <p-slider id="timeRange" [(ngModel)]="rangeValues" [range]="true" [step]="1" [min]="0" [max]="2"></p-slider>
     </div>
 
     <div style="text-align: center;">
       <p-button label="Create Appointment" (click)="onSubmitAppointment()"></p-button>
+      <!-- <p-button label="Secondary" (click)="onRemoveAppointment()" styleClass="p-button-raised p-button-secondary"></p-button> -->
     </div>
 
   </ng-template>
