@@ -1,3 +1,18 @@
+/* :host ::ng-deep p-card .p-element {
+  margin: 0 10% 0 10%;
+} */
+
+
+    /* border-color: white;
+    border-radius-left: 0;
+    border-left: none; */
+
+:host ::ng-deep .p-button.p-button-secondary, .p-buttonset.p-button-secondary > .p-button, .p-splitbutton.p-button-secondary > .p-button {
+    color: #64748B;
+    background: white;
+    border-width: 3px;
+    }
+
 :host ::ng-deep .p-inputtext {
     text-align: center;
 }

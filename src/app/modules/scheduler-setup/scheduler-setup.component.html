@@ -1,50 +1,57 @@
-<!-- TODO: ADD LABEL FOR SCHEDULE -->
-
-<div class="clientInfoContainer" style="text-align: center;">
-    <h3 style="text-align: center; margin-bottom: 0;"> Client Name: </h3>
-    <br>
-    <input type="text" pInputText [(ngModel)]="clientName" />
+<div style='background-color: white;' 
+    [ngStyle]="{color:'var(--bluegray-800)', borderRadius: 'var(--border-radius)', margin: '3rem', padding: '1rem 0'}">
+<!-- <div [ngStyle]="{backgroundColor:'#91e2ed', color: 'var(--primary-color-text)', borderRadius: 'var(--border-radius)', margin: '3rem', padding: '3rem 0 3rem 0'}"> -->
+    <div class="clientInfoContainer" style="text-align: center;">
+        <h3 style="text-align: center; margin-bottom: 0;"> Client Name: </h3>
+        <br>
+        <input type="text" pInputText [(ngModel)]="clientName" />
+        
+        <h3 style="text-align: center; margin-bottom: 0;"> Client Number: </h3>
+        <br>
+        <input type="text" pInputText [(ngModel)]="clientNumber" />
+    <!-- 
+        <h3 style="text-align: center; margin-bottom: 0;"> Address: </h3>
+        <br>
+        <input type="text" pInputText [(ngModel)]="addressStr" /> -->
+    </div>
     
-    <h3 style="text-align: center; margin-bottom: 0;"> Client Number: </h3>
-    <br>
-    <input type="text" pInputText [(ngModel)]="clientNumber" />
-
-    <h3 style="text-align: center; margin-bottom: 0;"> Address: </h3>
-    <br>
-    <input type="text" pInputText [(ngModel)]="addressStr" />
+    <div class="dateSelectionContainer">
+        <h3 style="text-align: center; margin-bottom: 0;"> Select Dates:</h3>
+        <br>
+    
+        <p-calendar
+            [(ngModel)]="dates"
+            selectionMode="multiple"
+            [readonlyInput]="true"
+            [showIcon]="true"
+            [style]="{'flex':'2'}" [inputStyle]="{'width':'95%'}"
+        ></p-calendar>
+    </div>
+    
+    <div style="text-align: center;">
+        <h3> Select Block Duration:</h3>
+        <p-selectButton [options]="durationOptions" [(ngModel)]="durationSelected" optionLabel="label" optionValue="value"></p-selectButton>
+    </div>
+    
+    <div style="text-align: center; display: flex; margin: 1% 10% 2% 10%">
+        <div style="flex:1">
+            <h3> Select Start Time:</h3>
+            <p-dropdown [options]="listOfTimes" [(ngModel)]="selectedStartTime" optionLabel="label"></p-dropdown>
+        </div>
+        <div style="flex:1">
+            <h3> Select End Time:</h3>
+            <p-dropdown [options]="listOfTimes" [(ngModel)]="selectedEndTime" optionLabel="label"></p-dropdown>
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin: 1em">
+        <p-button label="Preview" (click)="onPreview()"></p-button>
+    </div>
 </div>
 
-<div class="dateSelectionContainer">
-    <h3 style="text-align: center; margin-bottom: 0;"> Select Dates:</h3>
-    <br>
+<app-grid #gridComponent style="margin-bottom: 3em"></app-grid>
 
-    <p-calendar
-        [(ngModel)]="dates"
-        selectionMode="multiple"
-        [readonlyInput]="true"
-        [showIcon]="true"
-        [style]="{'flex':'2'}" [inputStyle]="{'width':'95%'}"
-    ></p-calendar>
-</div>
-
-<div style="text-align: center;">
-    <h3> Select Block Duration:</h3>
-    <p-selectButton [options]="durationOptions" [(ngModel)]="durationSelected" optionLabel="label" optionValue="value"></p-selectButton>
-</div>
-
-<div style="text-align: center;">
-    <h3> Select Start Time:</h3>
-    <p-dropdown [options]="listOfTimes" [(ngModel)]="selectedStartTime" optionLabel="label"></p-dropdown>
-    <h3> Select End Time:</h3>
-    <p-dropdown [options]="listOfTimes" [(ngModel)]="selectedEndTime" optionLabel="label"></p-dropdown>
-</div>
-
-<div style="text-align: center; margin: 1em">
-    <p-button label="Preview" (click)="onPreview()"></p-button>
-</div>
-
-<app-grid #gridComponent></app-grid>
-
-<div style="text-align: center; margin: 1em">
-    <p-button label="Send to Client" (click)="onSubmit()"></p-button>
+<div style="text-align: center; margin-bottom: 3em">
+    <p-button label="Send to Client" styleClass="p-button-raised p-button-secondary p-button-lg" (click)="onSubmit()"></p-button>
+    <!-- <p-button label="Send to Client" styleClass="p-button-outlined  p-button-secondary p-button-lg" (click)="onSubmit()"></p-button> -->
 </div>
